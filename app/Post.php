@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model 
+class Post extends Model
 {
 
     protected $table = 'posts';
@@ -16,7 +16,7 @@ class Post extends Model
         return $this->belongsTo('App\Category');
     }
 
-    public function clients_fav()
+    public function clientsFav()
     {
         return $this->belongsToMany('App\Client');
     }

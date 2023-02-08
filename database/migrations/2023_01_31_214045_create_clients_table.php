@@ -13,7 +13,8 @@ class CreateClientsTable extends Migration {
 			$table->string('email');
 			$table->string('password');
 			$table->string('phone');
-			$table->integer('pin_code');
+            $table->integer('pin_code');        // you should make it unique too.
+            $table->string('api_token', 70)->unique()->nullable();
 			$table->date('birthdate');
 			$table->date('last_donation_date')->nullable();
 			$table->integer('city_id')->unsigned();

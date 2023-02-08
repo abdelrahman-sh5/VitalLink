@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DonationRequest extends Model 
+class DonationRequest extends Model
 {
 
     protected $table = 'donation_requests';

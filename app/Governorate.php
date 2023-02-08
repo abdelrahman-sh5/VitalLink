@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Governorate extends Model 
+class Governorate extends Model
 {
 
     protected $table = 'governorates';
@@ -16,7 +16,7 @@ class Governorate extends Model
         return $this->hasMany('App\City');
     }
 
-    public function clients_notify()
+    public function clientsNotify()
     {
         return $this->belongsToMany('App\Client');
     }

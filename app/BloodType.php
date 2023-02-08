@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BloodType extends Model 
+class BloodType extends Model
 {
 
     protected $table = 'blood_types';
@@ -16,7 +16,7 @@ class BloodType extends Model
         return $this->hasMany('App\Client');
     }
 
-    public function clients_notify()
+    public function clientsNotify()
     {
         return $this->belongsToMany('App\Client');
     }

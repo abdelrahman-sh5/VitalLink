@@ -2,14 +2,16 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Client extends Model 
+class Client extends Authenticatable
 {
 
     protected $table = 'clients';
     public $timestamps = true;
-    protected $fillable = array('name', 'email', 'password', 'phone', 'pin_code', 'birthdate', 'last_donation_date');
+    protected $fillable = array('name', 'email', 'password', 'phone', 'birthdate', 'last_donation_date', 'city_id', 'blood_type_id');
+
+    protected $hidden = ['password'];
 
     public function city()
     {
@@ -21,12 +23,12 @@ class Client extends Model
         return $this->belongsTo('App\BloodType');
     }
 
-    public function governorates_notify()
+    public function governoratesNotify()
     {
         return $this->belongsToMany('App\Governorate');
     }
 
-    public function bloodTypes_notify()
+    public function bloodTypesNotify()
     {
         return $this->belongsToMany('App\BloodType');
     }
@@ -36,7 +38,7 @@ class Client extends Model
         return $this->belongsToMany('App\Notification');
     }
 
-    public function posts_fav()
+    public function postsFav()
     {
         return $this->belongsToMany('App\Post');
     }
