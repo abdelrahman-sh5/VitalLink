@@ -10,32 +10,34 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-
     public function listFavorites(Request $Request){
-        $favorites = ClientPost::join('posts', 'client_post.post_id', '=', 'posts.id')
-            ->join('clients', 'client_post.client_id', '=', 'clients.id')
-            ->where('clients.id', '=', $Request->id)       // where clause should come before get
-            ->get([
-                'posts.title',
-                'posts.content',
-                'posts.image'
-            ]);
+        // don't join manually but use many-to-many function in the table
+        $client     = $Request->user();
+        $favorites  = $client->postsFav()->paginate(10);
         return response()->json($favorites);
     }
 
-
     public function toggleFavorite(Request $request){
-        $client = Client::find($request->id);
-        $client->postsFav()->toggle($request->post);
+        $request->user()->postsFav()->toggle($request->post_id);     // Pass this in Body of the request.
         return response()->json('Added to - Removed from | favorites!');
     }
 
+    public function viewPosts(Request $request){
+        // Check if there's a category => ask again if there's a needle otherwise get all posts with this category.
+        $posts = Post::where(function($query) use($request){
+            if($request->has('category_id')){
+                if ($request->has('needle')){
+                    $query->where(function($query) use($request){
+                        $query->where('title', 'LIKE', "%{$request->needle}%")
+                              ->orWhere('content', 'LIKE', "%{$request->needle}%");
+                    });
+                }
+                $query->where('category_id', $request->category_id);
+            }
+        })->paginate(5);
 
-    public function viewPosts(){
-        $posts = Post::all();
-        return json_encode($posts);
+        return $posts;
     }
-
 
     public function viewOnePost($id){
         $post = Post::find($id);

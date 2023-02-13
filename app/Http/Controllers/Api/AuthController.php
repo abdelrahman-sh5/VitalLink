@@ -2,77 +2,92 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\City;
 use App\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use PhpParser\Node\Expr\Clone_;
 use App\Mail\sendMail;
 
 class AuthController extends Controller
 {
-    // TODO: protected $hidden not working.
+    public function profile(Request $request){
+        $clientData = Client::whereId($request->user()->id)->with('bloodType','city')
+                    ->get()->makeHidden(['api_token', 'pin_code']);
 
-    public function profile(){
-        if (\Auth::check())
-            return 'logged in';
-        return 'not logged in';
+        if ($request->has('name') || $request->has('email') || $request->has('phone') ||
+            $request->has('password') || $request->has('birthdate') || $request->has('last_donation_date') ||
+            $request->has('city_id') || $request->has('blood_type_id')){
+
+            $validation = validator()->make($request->all(),[
+                'birthdate' => 'date',
+                'last_donation_date' => 'date',
+                'email' => Rule::unique('clients')->ignore($request->user()->email),
+                'phone' => Rule::unique('clients')->ignore($request->user()->phone)
+            ]);
+
+            if ($validation->fails()){
+                return response()->json($validation->errors());
+            }
+
+            if($request->user()->update($request->all())){
+                return response()->json('Your data is now updated.');
+            }
+                return response()->json('Error while updating your data!');
+        }
+        return $clientData;
     }
-    public function register(Request $r)
+
+    public function register(Request $request)
     {
-        // Firstly validate input.
-//      $r->validate([]);
-        $v = validator()->make($r->all(), [
+        $validator = validator()->make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email:rfc,dns|unique:clients', // |unique:clients, email',
+            'email' => 'required|email:rfc,dns|unique:clients',
             'password' => 'required|confirmed|min:6',
-            'phone' => 'required',
-            'birthdate' => 'required|date',
-            'city_id' => 'required',
-            'blood_type_id' => 'required|integer|min:1|max:6',
+            'phone' => 'required|unique:clients'   , 'birthdate' => 'required|date',
+            'city_id' => 'required' , 'blood_type_id' => 'required|integer|min:1|max:6',
             'last_donation_date' => 'required|date'
         ]);
 
-        if ($v->fails())
-            return response()->json($v->errors());
+        if ($validator->fails())
+            return response()->json($validator->errors());
 
-        $c = new Client();
-        $c->name = $r->input('name');
-        $c->email = $r->input('email');
-        $c->password = Crypt::encrypt($r->input('password'));
-        $c->phone = $r->input('phone');
-        $c->birthdate = $r->input('birthdate');
-        $c->city_id = $r->input('city_id');
-        $c->blood_type_id = $r->input('blood_type_id');
-        $c->last_donation_date = $r->input('last_donation_date');
-        $c->api_token = md5(rand());
-        $c->save();
-        if ($c->save()){
+          $password = Hash::make($request->password);
+          $request->merge(['password'=>$password]);
+          $client = Client::create($request->all());
+          $client->api_token = md5(rand());
+
+          $clientData = Client::where('name', $request->input('name'))->first();
+          $clientData->bloodTypesNotify()->attach($clientData->blood_type_id);
+          $clientGovernorate = City::where('id', $clientData->city_id)->first();
+          $clientData->governoratesNotify()->attach($clientGovernorate->governorate_id);
+
+        if ($client->save()){
             return response()->json([
-                'token' => $c->api_token,
-                'client_data' => $r->except(['password', 'password_confirmation'])
+                'token' => $client->api_token,
+                'client_data' => $request->except(['password', 'password_confirmation'])
             ]);
         }else
             return json_encode("Error registering this client");
-
     }
 
-    public function login(Request $r){
-
-        $v = validator()->make($r->all(), [
+    public function login(Request $request){
+        $validation = validator()->make($request->all(), [
             'phone'     => 'required|string',
             'password'  => 'required'
         ]);
+        if ($validation->fails())
+            return response()->json($validation->errors());
 
-        if ($v->fails())
-            return response()->json($v->errors());
+        $client = Client::where('phone', $request->phone)->first();
 
-//        $auth = auth()->guard('api')->validate($r->all());
-        $client = DB::table('clients')->where('phone', $r->phone)->first();
-
-        if ($client && (decrypt($client->password) === $r->password) ) {
+        if ($client && Hash::check($request->password, $client->password) ) {
             return response()->json([
                 'token' => $client->api_token,
                 'Client' => [
@@ -81,77 +96,50 @@ class AuthController extends Controller
                     'phone' => $client->phone,
                     'city_id' => $client->city_id,
                     'blood_type_id' => $client->blood_type_id,
+                    'birthdate' => $client->birthdate,
                     'last_donation_date' => $client->last_donation_date
-                ]
-            ]);
-        }else{
-            return json_encode(["Incorrect Data!"]);
+            ]]);
         }
-
+        return json_encode(["Incorrect Data!"]);
     }
 
     public function resetPassword(Request $request){
-
         $validate = validator()->make($request->all(), [ 'phone' => 'required']);
-
         if ($validate->fails())
             return response()->json($validate->errors());
 
-        # check if pin_code is already there & send email with pin code to this client.
-        $clientData = Client::where('phone', '=', $request->phone)->get();
-
-        if ($clientData->first()->pin_code === null) {
+        $clientData = Client::where('phone', '=', $request->phone)->first();
+        if ($clientData && $clientData->pin_code === null) {
             $generatedPinCode = rand(100000, 1000000);
-            $client = DB::table('clients')
-                ->where('phone', $request->phone)
-                ->update(['pin_code' => $generatedPinCode]);
-
+            $client = Client::where('phone', $request->phone)->update(['pin_code' => $generatedPinCode]);
             $details = [
                 'title' => 'Your PinCode is Ready',
                 'body' => 'It\'s just an email to provide you with your pin_code '. $generatedPinCode
             ];
-            \Mail::to($clientData->first()->email)->send(new sendMail($details));
+            \Mail::to($clientData->email)->send(new sendMail($details));
         if ($client)
             return response()->json('Your pin code is ready check your email!');
         }
-        return response()->json('Your pin code has been already sent! Check your inbox');
+        return response()->json('Error - Check your phone or email');
     }
 
-    # Need to be modified (Enhancement)
     public function createNewPassword(Request $Request){
         $validator = validator()->make($Request->all(), [
+            'phone' => 'required',
             'pin_code' => 'required|integer',
             'password' => 'required|confirmed'
         ]);
 
         if ($validator->fails())
             return response()->json($validator->errors());
+        $password = Hash::make($Request->password);
 
-        # authenticate this user
-        $clientPinCode = DB::table('clients')->where('pin_code', $Request->pin_code)->first();
-
-        $clientObject = Client::where('pin_code', $Request->pin_code)->get();
-
-        if ($clientPinCode && ($clientPinCode->pin_code) == $Request->pin_code) {
-
-            # update this user's data.
-           $c_toUpdate =  DB::table('clients')->where('pin_code', $Request->pin_code)
-                ->where('pin_code', $Request->pin_code)
-                ->update(['password' => Crypt::encrypt($Request->password)]);
-
-            # get his data to be returned.
-            $updateClient =  DB::table('clients')->where('pin_code', $Request->pin_code)->first();
-
-            return response()->json([
-                'Client' => [
-                    'name' => $updateClient->name,
-                    'email' => $updateClient->email,
-                    'phone' => $updateClient->phone,
-                    'city_id' => $updateClient->city_id,
-                    'blood_type_id' => $updateClient->blood_type_id,
-                    'last_donation_date' => $updateClient->last_donation_date
-                ]
-            ]);
+        # Ensure this user is registered and if so update his credentials.
+        $clientPinCode = Client::where('phone', $Request->phone)
+                                ->where('pin_code', $Request->pin_code)
+                                ->update(['password'=> $password, 'pin_code' => null]);
+        if ($clientPinCode) {
+            return response()->json('Your Password has been updated successfully');
         }else{
             return json_encode(["Incorrect Data!"]);
         }

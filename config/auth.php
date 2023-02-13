@@ -35,6 +35,13 @@ return [
     |
     */
 
+    /*
+     * Laravel authentication system is routed through something called a a guard.
+     * Each guard is a combination of 2 pieces:
+     *      1) Driver that defines how it persists & retrieves the authentication state i.e(session)
+     *      2) Provider that allows you to get a user by certain criteria i.e(users).
+     */
+
     'guards' => [
         'web' => [
             'driver' => 'session',

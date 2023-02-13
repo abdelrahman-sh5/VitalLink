@@ -10,7 +10,6 @@ class Client extends Authenticatable
     protected $table = 'clients';
     public $timestamps = true;
     protected $fillable = array('name', 'email', 'password', 'phone', 'birthdate', 'last_donation_date', 'city_id', 'blood_type_id');
-
     protected $hidden = ['password'];
 
     public function city()
@@ -43,6 +42,7 @@ class Client extends Authenticatable
         return $this->belongsToMany('App\Post');
     }
 
+    // every hasMany function : make its name in plural. i.e (donationRequest(s))
     public function donationRequest()
     {
         return $this->hasMany('App\DonationRequest');
