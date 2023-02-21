@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\City;
-use App\Client;
+use App\Models\City;
+use App\Models\Client;
 use App\Http\Controllers\Controller;
+use App\Models\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -21,25 +22,21 @@ class AuthController extends Controller
         $clientData = Client::whereId($request->user()->id)->with('bloodType','city')
                     ->get()->makeHidden(['api_token', 'pin_code']);
 
-        if ($request->has('name') || $request->has('email') || $request->has('phone') ||
-            $request->has('password') || $request->has('birthdate') || $request->has('last_donation_date') ||
-            $request->has('city_id') || $request->has('blood_type_id')){
+        $validation = validator()->make($request->all(),[
+            'birthdate' => 'date',
+            'last_donation_date' => 'date',
+            'email' => Rule::unique('clients')->ignore($request->user()->email),
+            'phone' => Rule::unique('clients')->ignore($request->user()->phone)
+        ]);
 
-            $validation = validator()->make($request->all(),[
-                'birthdate' => 'date',
-                'last_donation_date' => 'date',
-                'email' => Rule::unique('clients')->ignore($request->user()->email),
-                'phone' => Rule::unique('clients')->ignore($request->user()->phone)
-            ]);
+        if ($validation->fails()){
+            return response()->json($validation->errors());
+        }
 
-            if ($validation->fails()){
-                return response()->json($validation->errors());
-            }
-
-            if($request->user()->update($request->all())){
-                return response()->json('Your data is now updated.');
-            }
-                return response()->json('Error while updating your data!');
+        if($request->user()->update($request->all())){
+            return response()->json('Your data is now updated.');
+        }else{
+            return response()->json('Error while updating your data!');
         }
         return $clientData;
     }
@@ -76,6 +73,32 @@ class AuthController extends Controller
         }else
             return json_encode("Error registering this client");
     }
+
+
+    public function registerToken(Request $request){
+        $validator = validator()->make($request->all(), [
+            'token' => 'required',
+            'type' => 'required'
+        ]);
+        if ($validator->fails())
+            return response()->json($validator->errors());
+        // if a particular device is already registered but a different client .. it'll overwrite client it.
+        if (Token::where('token', $request->token)->exists())
+            Token::where('token', $request->token)->delete();
+        $request->user()->tokens()->create($request->all());
+        return response()->json('Token Registered Successfully');
+    }
+
+    public function removeToken(Request $request){
+        $validator = validator()->make($request->all(), [
+            'token' => 'required'
+        ]);
+        if ($validator->fails())
+            return response()->json($validator->errors());
+        Token::where('token', $request->token)->delete();
+        return response()->json('Token Removed Successfully');
+    }
+
 
     public function login(Request $request){
         $validation = validator()->make($request->all(), [

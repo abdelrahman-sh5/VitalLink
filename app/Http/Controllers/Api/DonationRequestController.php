@@ -2,62 +2,90 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\BloodTypeClient;
-use App\City;
-use App\ClientGovernorate;
-use App\ClientNotification;
-use App\DonationRequest;
+use App\Models\BloodTypeClient;
+use App\Models\City;
+use App\Models\ClientGovernorate;
+use App\Models\ClientNotification;
+use App\Models\DonationRequest;
 use App\Http\Controllers\Controller;
-use App\BloodType;
-
-use App\Notification;
+use App\Models\BloodType;
+use App\Models\Notification;
+use App\Models\Token;
 use Illuminate\Http\Request;
 
 class DonationRequestController extends Controller
 {
-    public function createNewDonationRequest(Request $Request){
-        $validation = validator()->make($Request->all(), [
+    public function sendFCM($tokens, $title, $body){
+        $data = [
+            "registration_ids" => $tokens,
+            "notification" => [
+                "title" => $title,
+                "body" => $body,
+                'sound' => "default",
+                'color' => "#203E78",
+                'light' => 'default'
+            ]
+        ];
+
+        $dataString = json_encode($data);
+        $headers = array(
+            'Authorization: key=' . config('fcm.app_key'),
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+    public function createNewDonationRequest(Request $request){
+        $validation = validator()->make($request->all(), [
             'patient_name'=> 'required'         , 'patient_phone'=> 'required',
             'age'       => 'required|integer'   , 'bags'         => 'required',
             'hospital'  => 'required'           , 'address'      => 'required',
             'notes'     => 'required'           , 'blood_type_id'=> 'required',
-            'city_id'   => 'required|integer'   , 'client_id'    => 'required|integer'
+            'city_id'   => 'required|integer'
         ]);
 
         if ($validation->fails())
             return response()->json($validation->errors());
-        $donation = $Request->user()->donationRequest()->create($Request->all());
-        $bloodTypeName = BloodType::where('id', $Request->blood_type_id)->pluck('name');
+        $donation = $request->user()->donationRequest()->create($request->all());
+        $bloodTypeName = BloodType::where('id', $request->blood_type_id)->pluck('name');
 
         $notification = new Notification;
-        $notification->id = $donation->id;
-        $notification->title = 'Alert! There\'s a new donation request now';
-        $notification->content = $Request->patient_name . ' needs blood of type : ' . $bloodTypeName;
+        $notification->id       = $donation->id;
+        $notification->title    = 'Alert! There\'s a new donation request now';
+        $notification->content  = $request->patient_name . ' needs blood of type : ' . $bloodTypeName;
         $notification->save();
 
-        # get governorate_id from cities based on city_id
-        $governorateId = City::where('id', $Request->city_id)->pluck('governorate_id');
-        # get client_id from client_governorate based on governorate_id
-        $governorateClients = ClientGovernorate::where('governorate_id', $governorateId)->pluck('client_id');
+        $clientsIds = $donation->city->governorate
+            ->clientsNotify()->whereHas('bloodTypesNotify', function($q) use ($request){
+                $q->where('blood_types.id', $request->blood_type_id);
+            })->pluck('clients.id')->toArray();
+        $result = $notification->clients()->sync($clientsIds);
 
-        # get client_id from blood_type_client based on blood_type_id
-        $bloodTypeClients = BloodTypeClient::where('blood_type_id', $Request->blood_type_id)->pluck('client_id');
+        $tokens = Token::whereIn('client_id', $clientsIds)
+                        ->where('token' ,'!=',null)->pluck('token')->toArray();
 
-        # check if (same client here & there), then insert into client_notification
-        foreach ($governorateClients as $gc){
-            foreach ($bloodTypeClients as $bc) {
-                if ($gc == $bc)
-                    $result = ClientNotification::create([
-                        'client_id'       => $gc,
-                        'notification_id' => $donation->id
-                    ]);
-            }
+
+        if (count($tokens) > 0){
+        $result = $this->sendFCM($tokens, $notification->title, $notification->content);
         }
+
+        $tokens = $request->user()->tokens()->where('token' ,'!='. '')
+                        ->whereIn('client_id', $clientsIds)->pluck('token')->toArray();
 
         if ($result)
             return response()->json('Donation Request with Notification Stored Successfully.');
         return response()->json('Error - check entered data.');
     }
+
 
     public function viewOneDonationRequest($id){
         return DonationRequest::where('id', $id)->get();

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\BloodType;
-use App\Governorate;
-use App\Client;
-use App\Setting;
+use App\Models\BloodType;
+use App\Models\Governorate;
+use App\Models\Client;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -27,7 +27,6 @@ class NotificationController extends Controller
 
 
     public function notifications(Request $request){
-        # Get client notification by many-to-many method [notifications()] in Client Model.
         $notifications = $request->user()->notifications()->paginate(10);
         return $notifications;
     }

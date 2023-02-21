@@ -34,8 +34,12 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class,  'login']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/create-new-password', [AuthController::class, 'createNewPassword']);
+
+// scope
+// load()
+
 /**
-Code Review [Results]
+* Code Review [Results]
  * Code Replication - other side use many-to-many methods.
  * Naming Conventions
  * The way of dealing with passwords
@@ -43,10 +47,8 @@ Code Review [Results]
  * Take care of how tables are being stored with data [$fillable vs $hidden]
  * Auto add Notifications when creating donation_request
  *
- *
-// 1 apply as it is & as we know
-// 2 Learn new things & apply in a project بالتوازي to really enlarge what [we know].
  */
+
 Route::get('cities', [MainController::class, 'cities']);
 Route::get('settings', 'Api\MainController@settings');
 Route::get('categories', 'Api\MainController@categories');
@@ -54,8 +56,10 @@ Route::get('governorates', 'Api\MainController@governorates');
 // auth = middleware
 // api  = guard
 Route::group(['middleware'=>'auth:api'], function(){
-    # Not yet Finished
+    # Finished
     Route::post('/profile', 'Api\AuthController@profile');
+    Route::post('/register-token', 'Api\AuthController@registerToken');
+    Route::post('/remove-token', 'Api\AuthController@removeToken');
 
     # Notifications
     Route::post('/notifications', 'Api\NotificationController@notifications');
@@ -79,38 +83,6 @@ Route::get('/view-one-donation-request/{id}', 'Api\DonationRequestController@vie
 # Posts
 Route::post('/view-posts', 'Api\PostController@viewPosts');
 Route::get('/view-one-post/{id}', 'Api\PostController@viewOnePost');
-
-/*
- * Hash vs Encrypt
- * Protected $fillable = [] will prevent you from storing data in database table. if a column is not there.
- * *edit pass Profile Service    : [get an object from the logged in client/user]
- * Notifications view
- * Posts Search
- * update every function with request id of logged in user.
- *  what does pluck do ?
- * eager loading
- * morph relationships
- * Auth::routes()
- * Accessors & Mutators
- * return asset();
- * info() function
- * compact()
- * ->whereHas()
- * $request->merge, $request->has(), $request->whereHas()
- * Rule::unique()->ignore();
- * Guards vs Middlewares
- * $request->user()->fresh()->load()
- * attempt() - intended()
- * validation rule = exists
- * ->latest() vs oldest()
- * .env()
- * ClassName::with(Relations : 'city', 'client') - what's with
- * How to send real Notifications to the corresponding clients.
- * $request->user()->favorites()->paginate(); () means there's an extra query
- * $request->user()->favorites; Just fetch data -
- * withPivot(columns); // table relationships.
- * protected $appends = [] // in Model Class
- * */
 
 //Route::apiResources();
 Route::post('/attachClientBloodType', 'Api\NotificationController@attachClientBloodType');

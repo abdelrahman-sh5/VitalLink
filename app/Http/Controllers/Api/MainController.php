@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Category;
-use App\Governorate;
-use App\City;
-use App\Setting;
+use App\Models\Category;
+use App\Models\Governorate;
+use App\Models\City;
+use App\Models\Setting;
 
 class MainController extends Controller
 {

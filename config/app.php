@@ -120,6 +120,7 @@ return [
     */
 
     'key' => env('APP_KEY'),
+//    'secret_key' => env('FIREBASE_API_ACCESS_KEY'),
 
     'cipher' => 'AES-256-CBC',
 

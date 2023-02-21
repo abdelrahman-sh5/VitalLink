@@ -2,28 +2,32 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\ClientPost;
+use App\Models\ClientPost;
 use App\Http\Controllers\Controller;
-use App\Post;
-use App\Client;
+use App\Models\Post;
+use App\Models\Client;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     public function listFavorites(Request $Request){
-        // don't join manually but use many-to-many function in the table
         $client     = $Request->user();
         $favorites  = $client->postsFav()->paginate(10);
         return response()->json($favorites);
     }
 
     public function toggleFavorite(Request $request){
-        $request->user()->postsFav()->toggle($request->post_id);     // Pass this in Body of the request.
+        $validator = validator()->make($request->all(), [
+            'post_id' => 'required|integer'
+        ]);
+        if ($validator->fails())
+            return response()->json($validator->errors());
+
+        $request->user()->postsFav()->toggle($request->post_id);
         return response()->json('Added to - Removed from | favorites!');
     }
 
     public function viewPosts(Request $request){
-        // Check if there's a category => ask again if there's a needle otherwise get all posts with this category.
         $posts = Post::where(function($query) use($request){
             if($request->has('category_id')){
                 if ($request->has('needle')){
