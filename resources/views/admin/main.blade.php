@@ -1,6 +1,8 @@
 @extends('admin.home')
 @inject('client','App\Models\Client')
 @inject('donations','App\Models\DonationRequest')
+@inject('posts','App\Models\Post')
+@inject('cities','App\Models\City')
 
 @section('title', 'Main Page')
 @section('small-title', 'Simple title')
@@ -37,12 +39,38 @@
                 <!-- /.info-box -->
             </div>
 
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green-gradient"><i class="fa fa-bar-chart"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Posts</span>
+                        <span class="info-box-number"> {{$posts->count()}} </span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red-active"><i class="fa fa-pie-chart"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Cities</span>
+                        <span class="info-box-number"> {{$cities->count()}} </span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
         </div>
 
         <!-- Default box -->
         <div class="box">
             <div class="box-header with-border">
-                <h3 class="box-title">Title</h3>
+                <h3 class="box-title">Admin Dashboard</h3>
 
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
@@ -53,11 +81,11 @@
                 </div>
             </div>
             <div class="box-body">
-                Start creating your amazing application!
+                Here you can control everything i.e cities, governorates, donations and clients
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                Footer
+
             </div>
             <!-- /.box-footer-->
         </div>

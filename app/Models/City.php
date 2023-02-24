@@ -26,4 +26,8 @@ class City extends Model
         return $this->hasMany('App\Models\DonationRequest');
     }
 
+    public static function getAll(){
+        return City::all();
+    }
+
 }

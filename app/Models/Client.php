@@ -9,7 +9,7 @@ class Client extends Authenticatable
 
     protected $table = 'clients';
     public $timestamps = true;
-    protected $fillable = array('name', 'email', 'password', 'phone', 'birthdate', 'last_donation_date', 'city_id', 'blood_type_id');
+    protected $fillable = array('name', 'email', 'password', 'phone', 'birthdate', 'last_donation_date', 'city_id', 'blood_type_id', 'is_active');
     protected $hidden = ['password'];
 
     public function city()

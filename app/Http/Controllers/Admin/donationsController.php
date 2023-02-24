@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Models\category;
 use App\Http\Controllers\Controller;
 
-class categoriesController extends Controller
+class donationsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +14,7 @@ class categoriesController extends Controller
      */
     public function index()
     {
-        $data = Category::paginate(7);
-        return view('admin.categories.index', compact('data'));
+        //
     }
 
     /**
@@ -26,7 +24,7 @@ class categoriesController extends Controller
      */
     public function create()
     {
-        return view('admin.categories.createForm');
+        //
     }
 
     /**
@@ -37,10 +35,7 @@ class categoriesController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required'], ['name.required' => 'fill name field']);
-        Category::create($request->all());
-
-        return redirect(route('categories.index'))->with('message', 'Added Successfully');
+        //
     }
 
     /**
@@ -62,8 +57,7 @@ class categoriesController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::find($id);
-        return view('admin.categories.updateForm', ['category'=> $category]);
+        //
     }
 
     /**
@@ -75,10 +69,7 @@ class categoriesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate(['name' => 'required']);
-        $category = Category::find($id);
-        $category->update($request->all());
-        return redirect(route('categories.index'))->with('message', 'Updated Successfully');
+        //
     }
 
     /**
@@ -89,8 +80,6 @@ class categoriesController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::find($id);
-        $category->delete();
-        return redirect(route('categories.index'));
+        //
     }
 }

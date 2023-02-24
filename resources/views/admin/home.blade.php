@@ -8,6 +8,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="{{asset('admin/plugins/bootstrap/dist/css/bootstrap.min.css')}}">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{asset('admin/plugins/font-awesome/css/font-awesome.min.css')}}">
     <!-- Ionicons -->
@@ -20,6 +21,7 @@
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -34,7 +36,7 @@
 
     <header class="main-header">
         <!-- Logo -->
-        <a href="../../index2.html" class="logo">
+        <a href="{{url('/admin/main')}}" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><b>B</b>B</span>
             <!-- logo for regular state and mobile devices -->
@@ -114,19 +116,42 @@
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-dashboard"></i> <span>Generals</span>
+                        <i class="fa fa-folder-o"></i> <span>Generals</span>
                         <span class="pull-right-container">
                               <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{{url(route('governorates.index'))}}"><i class="fa fa-circle-o"></i> Governorates</a></li>
-                        <li><a href="{{url(route('categories.index'))}}"><i class="fa fa-circle-o"></i> Categories</a></li>
-                        <li><a href="{{url(route('cities.index'))}}"><i class="fa fa-circle-o"></i> Cities</a></li>
-                        <li><a href="{{url(route('posts.index'))}}"><i class="fa fa-circle-o"></i> Posts</a></li>
+                        <li><a href="{{route('governorates.index')}}"><i class="fa fa-circle-o"></i> Governorates</a></li>
+                        <li><a href="{{route('categories.index')}}"><i class="fa fa-circle-o"></i> Categories</a></li>
+                        <li><a href="{{route('cities.index')}}"><i class="fa fa-circle-o"></i> Cities</a></li>
+                        <li><a href="{{route('posts.index')}}"><i class="fa fa-circle-o"></i> Posts</a></li>
                     </ul>
                 </li>
-
+                <li>
+                    <a href="{{route('clients.index')}}">
+                        <i class="fa fa-user"></i> <span>Clients</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('donations.index')}}">
+                        <i class="fa fa-tint"></i> <span>Donations</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('contacts.index')}}">
+                        <i class="fa fa-address-book-o"></i> <span>Contacts</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{route('settings.index')}}">
+                        <i class="fa fa-cogs"></i> <span>Settings</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
                 <li><a href="https://adminlte.io/docs"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
             </ul>
         </section>
@@ -166,6 +191,7 @@
 </div>
 <!-- ./wrapper -->
 
+@stack('script')
 <!-- jQuery 3 -->
 <script src="{{asset('admin/plugins/jquery/dist/jquery.min.js')}}"></script>
 <!-- Bootstrap 3.3.7 -->

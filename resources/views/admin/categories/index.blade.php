@@ -8,12 +8,12 @@
 @section('content')
     <!-- Main content -->
     <section class="content">
-        @if(session('message'))
-            <div class="alert alert-success">
-                <span class="closebtn" onclick="this.parentElement.style.display='none';"> &times; </span>
-                {{session('message')}}
+        <div class="box box-default color-palette-box">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-tag"></i> Categories List</h3>
             </div>
-        @endif
+            <div class="box-body">
+        @include('admin.helpers.success')
         @if($data->count() > 0)
         <a href="{{url(route('categories.create'))}}" class="btn btn-primary"> <li class="fa fa-plus"></li> &nbsp; Add a new one</a>
             <br> <br>
@@ -64,6 +64,8 @@
 
                 @endif
             {{$data->links()}}
+            </div>
+        </div>
     </section>
     <!-- /.content -->
 @endsection

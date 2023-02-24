@@ -7,7 +7,11 @@
 
     <!-- Main content -->
     <section class="content">
-
+        <div class="box box-default color-palette-box">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-save"></i> Store a new Category</h3>
+            </div>
+            <div class="box-body">
         <form role="form" action="{{ route('categories.store') }}" method="post">
             {{ csrf_field() }}     <!-- For security Reasons. -->
             <div class="box-body">
@@ -21,7 +25,8 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
-
+        </div>
+    </div>
     </section>
     <!-- /.content -->
 @endsection

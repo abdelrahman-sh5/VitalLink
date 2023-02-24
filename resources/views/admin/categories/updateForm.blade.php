@@ -7,11 +7,16 @@
 
     <!-- Main content -->
     <section class="content">
-
+        <div class="box box-default color-palette-box">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-edit"></i> Edit a category</h3>
+            </div>
+            <div class="box-body">
         <form role="form" action="{{ route('categories.update', [$category->id]) }}" method="post">
             @csrf
            {{method_field('PUT')}}
             <div class="box-body">
+                @include('admin.helpers.errors')
                 <div class="form-group">
                     <label> Name </label>
                     <input type="text" name="name" class="form-control" value="{{$category->name}}">
@@ -19,7 +24,8 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
-
+            </div>
+        </div>
     </section>
     <!-- /.content -->
 @endsection

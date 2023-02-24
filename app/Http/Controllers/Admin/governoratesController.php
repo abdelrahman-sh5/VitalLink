@@ -14,7 +14,7 @@ class governoratesController extends Controller
      */
     public function index()
     {
-        $data = Governorate::paginate(10);
+        $data = Governorate::paginate(7);
         return view('admin.governorates.index', compact('data'));
     }
 

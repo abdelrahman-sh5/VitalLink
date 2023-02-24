@@ -8,17 +8,16 @@
 
     <!-- Main content -->
     <section class="content">
-
+        <div class="box box-default color-palette-box">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-edit"></i> Edit a city</h3>
+            </div>
+            <div class="box-body">
         <form role="form" action="{{ route('cities.update', [$row->id]) }}" method="post">
             @csrf
            {{method_field('PUT')}}
             <div class="box-body">
-                @if($errors->has('name'))
-                    <div class="callout callout-danger">{{ $errors->first('name') }}</div>
-                @endif
-                @if($errors->has('governorate'))
-                    <div class="callout callout-danger">{{ $errors->first('governorate') }}</div>
-                @endif
+                @include('admin.helpers.errors')
                     <div class="form-group">
                     <label> Name </label>
                     <input type="text" name="name" class="form-control" value="{{$row->name}}">
@@ -32,9 +31,11 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
+
             </div>
         </form>
-
+            </div>
+        </div>
     </section>
     <!-- /.content -->
 @endsection

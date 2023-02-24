@@ -15,7 +15,7 @@ class citiesController extends Controller
      */
     public function index()
     {
-        $data = City::paginate(10);
+        $data = City::paginate(7);
         return view('admin.cities.index')->with(['data' => $data]);
     }
 
@@ -42,7 +42,7 @@ class citiesController extends Controller
         if ($validate->fails())
             return view('admin.cities.createForm')->withErrors($validate);
         return (City::create($request->all()))
-            ? redirect(route('cities.index'))->with('message', 'success') :  view('admin.cities.createForm');
+            ? redirect(route('cities.index'))->with('message', 'Added Successfully') :  view('admin.cities.createForm');
     }
 
     /**
@@ -79,11 +79,13 @@ class citiesController extends Controller
     {
         $row = City::findOrFail($id);
         $rules =['name' => 'required'];
-        $messages = ['name.required' => 'PLeaZe ENTER da name of this city'];
+        $messages = ['name.required' => 'Name of the city is required'];
+//        $request->validate($rules, $messages);
         $validate = \Validator::make($request->all(),$rules, $messages);
         if ($validate->fails())
             return view('admin.cities.updateForm')->withErrors($validate)->with('row', $row);
         return ($row->update($request->all())) ? redirect(route('cities.index')) :  view('admin.cities.updateForm')->with('row', $row);
+        return redirect(route('cities.index'));
     }
 
     /**

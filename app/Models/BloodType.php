@@ -26,4 +26,8 @@ class BloodType extends Model
         return $this->hasMany('App\Models\DonationRequest');
     }
 
+    public static function getAll(){
+        return BloodType::all();
+    }
+
 }

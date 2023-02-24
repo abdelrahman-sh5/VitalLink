@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\City;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
@@ -15,7 +16,7 @@ class postsController extends Controller
      */
     public function index()
     {
-        $data = Post::paginate(10);
+        $data = Post::paginate(3);
         return view('admin.posts.index')->with('data', $data);
     }
 
@@ -31,20 +32,28 @@ class postsController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
+     * $request->file('image')->getClientOriginalExtension()  -OR-  $request->image->extension()
+     * guessExtension() - getMimeType() = getClientMimeType() -
+     * getClientOriginalName() - getClientExtension() -getSize() - getError()
+     * store() - asStore() - storePublicly() - move()
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $rules =['title' => 'required', 'content' => 'required', 'image'=>'image'];
-        $validate = \Validator::make($request->all(),$rules);
-        if ($validate->fails())
-            return view('admin.posts.createForm')->withErrors($validate);
-        // Make a default image file if none uploaded.
-        $image = $request->image->store('images');
-//        dd($request->all());
-        return (Post::create($request->all())) ? redirect(route('posts.index')) : redirect(route('posts.create'));
+        $request->validate($rules);
+        $post = new Post();
+        $post->title    = $request->input('title');
+        $post->content  = $request->input('content');
+        $post->image    = 'default.jpg';        // that's why we did not use static method ::create()
+        $post->category_id   = $request->input('category_id');
+        if ($request->hasFile('image')){
+            $newImageName = time() . rand(10, 999) . '.' . $request->image->getClientOriginalExtension();
+            $request->image->move(storage_path('app/public/images'), $newImageName);
+            $post->image    = $newImageName;
+        }
+        return ($post->save()) ? redirect(route('posts.index'))->with('message', 'Added Successfully') : redirect(route('posts.create'));
     }
 
     /**
@@ -66,7 +75,8 @@ class postsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::find($id);
+        return view('admin.posts.updateForm', ['post' => $post]);
     }
 
     /**
@@ -78,7 +88,17 @@ class postsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate(['title'=>'required', 'content'=>'required']);
+        $post = Post::find($id);
+        $post->title    = $request->input('title');
+        $post->content  = $request->input('content');
+        $post->category_id  = $request->input('category_id');
+        if ($request->hasFile('image')){
+            $newImageName = time() . rand(10, 999) . '.' . $request->image->getClientOriginalExtension();
+            $request->image->move(storage_path('app/public/images'), $newImageName);
+            $post->image    = $newImageName;
+        }
+        return ($post->save()) ? redirect(route('posts.index')) :  view('admin.posts.updateForm')->with('post', $post);
     }
 
     /**
@@ -89,6 +109,8 @@ class postsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::find($id);
+        $post->delete();
+        return redirect(route('posts.index'));
     }
 }
