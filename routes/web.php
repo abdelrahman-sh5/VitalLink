@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ClientsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,23 +23,17 @@ Route::get('/', function () {
     });
 //});
 
-/*File Methods
- * guessExtension() - getMimeType() - store() - asStore() - storePublicly() - move()
- * getClientOriginName() - getClientMimeType() - getClientExtension() -getSize() - getError()
- *  -
- *
- * */
 
-Route::prefix('admin')->group(function (){
+Route::prefix('admin')->middleware('auth:web')->group(function (){
     Route::get('main', function () { return view('admin.main'); });
-    Route::resource('governorates', 'Admin\governoratesController');
-    Route::resource('cities', 'Admin\citiesController');
-    Route::resource('categories', 'Admin\categoriesController');
-    Route::resource('posts', 'Admin\postsController');
-    Route::resource('clients', 'Admin\clientsController');
-    Route::resource('donations', 'Admin\donationsController');
-    Route::resource('contacts', 'Admin\contactsController');
-    Route::resource('settings', 'Admin\settingsController');
+    Route::resource('governorates', 'Admin\GovernoratesController');
+    Route::resource('cities', 'Admin\CitiesController');
+    Route::resource('categories', 'Admin\CategoriesController');
+    Route::resource('posts', 'Admin\PostsController');
+    Route::resource('clients', 'Admin\ClientsController');
+    Route::resource('donations', 'Admin\DonationsController');
+    Route::resource('contacts', 'Admin\ContactsController');
+    Route::resource('settings', 'Admin\SettingsController');
 });
 
 

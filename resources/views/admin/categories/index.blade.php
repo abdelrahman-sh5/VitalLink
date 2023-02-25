@@ -13,7 +13,7 @@
                 <h3 class="box-title"><i class="fa fa-tag"></i> Categories List</h3>
             </div>
             <div class="box-body">
-        @include('admin.helpers.success')
+        @include('admin.helpers.message')
         @if($data->count() > 0)
         <a href="{{url(route('categories.create'))}}" class="btn btn-primary"> <li class="fa fa-plus"></li> &nbsp; Add a new one</a>
             <br> <br>

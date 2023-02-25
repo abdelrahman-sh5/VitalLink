@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 
-class postsController extends Controller
+class PostsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -111,6 +111,6 @@ class postsController extends Controller
     {
         $post = Post::find($id);
         $post->delete();
-        return redirect(route('posts.index'));
+        return redirect(route('posts.index'))->with('message', 'Deleted');
     }
 }

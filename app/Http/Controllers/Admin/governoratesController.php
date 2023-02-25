@@ -7,7 +7,7 @@ use App\Models\Governorate;
 use App\Http\Controllers\Controller;
 
 
-class governoratesController extends Controller
+class GovernoratesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -37,7 +37,7 @@ class governoratesController extends Controller
         $request->validate(['name' => 'required'], ['name.required' => 'fill name field']);
         Governorate::create($request->all());
 
-        return redirect(route('governorates.index'))->with('message', 'Successfully Added');
+        return redirect(route('governorates.index'))->with('message', 'Added Successfully');
     }
 
     /**
@@ -87,6 +87,6 @@ class governoratesController extends Controller
     {
         $governorate = Governorate::find($id);
         $governorate->delete();
-        return redirect(route('governorates.index'));
+        return redirect(route('governorates.index'))->with('message', 'Deleted');
     }
 }

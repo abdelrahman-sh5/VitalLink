@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class contactsController extends Controller
+class ContactsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +15,10 @@ class contactsController extends Controller
      */
     public function index()
     {
-        //
+        $data = Contact::paginate(3);
+//        return view('admin.contacts.index', ['data' => $data]);
+//        return view('admin.contacts.index')->with(['data' => $data]);
+        return view('admin.contacts.index', compact('data'));
     }
 
     /**
@@ -80,6 +84,8 @@ class contactsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $contact = Contact::find($id);
+        $contact->delete();
+        return redirect()->to('admin/contacts')->with('message', 'Deleted');
     }
 }

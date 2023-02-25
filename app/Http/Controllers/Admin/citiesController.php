@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\City;
 use App\Http\Controllers\Controller;
 
-class citiesController extends Controller
+class CitiesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -85,7 +85,6 @@ class citiesController extends Controller
         if ($validate->fails())
             return view('admin.cities.updateForm')->withErrors($validate)->with('row', $row);
         return ($row->update($request->all())) ? redirect(route('cities.index')) :  view('admin.cities.updateForm')->with('row', $row);
-        return redirect(route('cities.index'));
     }
 
     /**
@@ -98,6 +97,6 @@ class citiesController extends Controller
     {
         $row = City::find($id);
         $row->delete();
-        return redirect(route('cities.index'));
+        return redirect(route('cities.index'))->with('message', 'Deleted');
     }
 }

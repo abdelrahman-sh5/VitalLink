@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\category;
 use App\Http\Controllers\Controller;
 
-class categoriesController extends Controller
+class CategoriesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -78,7 +78,7 @@ class categoriesController extends Controller
         $request->validate(['name' => 'required']);
         $category = Category::find($id);
         $category->update($request->all());
-        return redirect(route('categories.index'))->with('message', 'Updated Successfully');
+        return redirect(route('categories.index')); //->with('message', 'Updated Successfully');
     }
 
     /**
@@ -91,6 +91,6 @@ class categoriesController extends Controller
     {
         $category = Category::find($id);
         $category->delete();
-        return redirect(route('categories.index'));
+        return redirect(route('categories.index'))->with('message', 'Deleted');
     }
 }

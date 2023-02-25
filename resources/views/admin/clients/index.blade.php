@@ -5,7 +5,7 @@
 
 @section('title', 'Clients Page')
 @section('small-title', 'Simple title')
-
+{{--{{dd($data)}}--}}
 @section('content')
     <!-- Main content -->
     <section class="content">
@@ -14,11 +14,11 @@
                 <h3 class="box-title"><i class="fa fa-tag"></i> Clients List</h3>
             </div>
             <div class="box-body">
-                @include('admin.helpers.success')
+                @include('admin.helpers.message')
                 @if($data->count() > 0)
                     <div class="table-responsive">
                        <div class="pull-right">
-                           <label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label>
+{{--                           <label>Search:<input type="search" class="form-control input-sm" placeholder="" aria-controls="example1"></label>--}}
                        </div>
                         <table class="table table-bordered" id="clientsTable">
                             <thead>
@@ -29,7 +29,7 @@
                                         </a>
                                         <ul class="dropdown-menu">
                                             @forelse($governorates::getAll() as $governorate)
-                                                <li role="presentation"><a role="menuitem" onclick="test()" tabindex="-1">{{$governorate->name}}</a></li>
+                                                <li role="presentation"><a role="menuitem" href="{{route('clients.index', ['tab' => 'gov', 'governorate_id' => $governorate->id])}}" tabindex="-1">{{$governorate->name}}</a></li>
                                             @empty
                                             @endforelse
                                         </ul>
@@ -43,7 +43,7 @@
                                         </a>
                                         <ul class="dropdown-menu">
                                             @forelse($cities::getAll() as $city)
-                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{{$city->name}}</a></li>
+                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="{{route('clients.index', ['tab' => 'city', 'city_id' => $city->id])}}">{{$city->name}}</a></li>
                                             @empty
                                             @endforelse
                                         </ul>
@@ -57,7 +57,7 @@
                                         </a>
                                         <ul class="dropdown-menu">
                                             @forelse($bloodTypes::getAll() as $bloodType)
-                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{{$bloodType->name}}</a></li>
+                                                <li role="presentation"><a role="menuitem" tabindex="-1" href="{{route('clients.index', ['tab' => 'bloodType', 'blood_type_id' => $bloodType->id])}}">{{$bloodType->name}}</a></li>
                                             @empty
                                             @endforelse
                                         </ul>
@@ -88,14 +88,16 @@
                                     <td> {{$client->bloodType->name}} </td>
                                     <td> {{$client->city->name}} </td>
                                     <td>
+                                        <form action="{{route('clients.update', [$client->id])}}" method="post">
+                                            {{method_field('PUT')}}
                                         <div class="btn-group" data-toggle="buttons">
                                             <label class="btn btn-default {{($client->is_active != null) ? "active" : ""}}">
-                                                <input type="radio" name="options" id="option1"> Active
+                                                <input type="radio" onchange="this.form.submit();" name="is_active" value="{{1}}" id="option1"> Active
                                             </label>
                                             <label class="btn btn-default {{($client->is_active == null) ? "active" : ""}}">
-                                                <input type="radio" name="options" id="option2"> Inactive
+                                                <input type="radio" onchange="this.form.submit();" name="is_active" value="{{0}}" id="option2"> Inactive
                                             </label>
-                                        </div>
+                                        </div> </form>
                                     </td>
                                 </tr>
                             @endforeach
@@ -103,24 +105,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                @elseif($cities->count() == 0)
-                    <div class="col-md-6">
-                        <div class="box box-solid">
-                            <div class="box-header with-border">
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body">
-                                <blockquote>
-                                    <strong> 0Ops ! No Cities found .. you can add now </strong> &nbsp; &nbsp;
-                                    <a href="{{ url(route('cities.create')) }}" class="btn btn-primary"> <li class="fa fa-plus"></li> &nbsp; Add a new City !! </a>
-                                </blockquote>
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
-                        <!-- /.box -->
-                    </div>
-
                 @else
                     <div class="col-md-6">
                         <div class="box box-solid">
@@ -131,6 +115,10 @@
                                 <blockquote>
                                     <strong> 0Ops ! No Clients yet</strong>
                                 </blockquote>
+
+                                <a type="submit" href="{{url('admin/clients')}}" class="btn btn-primary">
+                                    <li class="fa fa-step-backward">&nbsp; Go Back </li>
+                                </a>
                             </div>
                             <!-- /.box-body -->
                         </div>
