@@ -14,6 +14,11 @@
                 @include('admin.helpers.message')
                 @if($data->count() > 0)
                     <div class="table-responsive">
+                        <a href="{{url(route('contacts.create'))}}" onclick="return confirm('Are u sure u want to delete all ?')" class="btn btn-danger"> <li class="fa fa-trash"></li> &nbsp; Delete All</a>
+                        <form action="" class="pull-right">
+                            <input type="search" class="form-control input-sm" placeholder="Pres Enter to search" name="search" aria-controls="example1">
+                        </form>
+                        <br> <br>
                         <table  style="table-layout: auto; width: 100%" class="table table-bordered" id="clientsTable">
                             <thead>
                             <tr>
@@ -54,7 +59,7 @@
                             <!-- /.box-header -->
                             <div class="box-body">
                                 <blockquote>
-                                    <strong> 0Ops ! No Clients yet</strong>
+                                    <strong> 0Ops ! No Contacts yet</strong>
                                 </blockquote>
                             </div>
                             <!-- /.box-body -->

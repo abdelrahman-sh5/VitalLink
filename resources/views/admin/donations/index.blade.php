@@ -13,54 +13,60 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><i class="fa fa-tag"></i> Donation Requests List</h3>
             </div>
-            <div class="box-body">
-
+    <div class="box-body">
         @include('admin.helpers.message')
         @if($data->count() > 0)
         <div class="table-responsive">
-            <table class="table table-bordered" style="table-layout: auto; width: 100%">
+            <table class="table table-bordered" id="clientsTable" style="height: 90px; max-height: 90px;">
                 <thead>
-                <ul class="nav nav-tabs pull-left">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                            Blood Types <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            @forelse($bloodTypes::getAll() as $bloodType)
-                                <li role="presentation"><a role="menuitem" href="{{route('donations.index', ['tab' => 'bloodType', 'blood_type_id' => $bloodType->id])}}" tabindex="-1">bloodType : &nbsp; {{$bloodType->name}}</a></li>
-                            @empty
-                            @endforelse
-                        </ul>
-                    </li>
-                </ul>
+                <div class="box-body">
+                    <div class="row">
+                        <form action="" class="pull-right" method="get">
+                            <div class="col-xs-2">
+                                <label> Governorate </label>
+                                <select name="governorate_id" class="form-control">
+                                    <option value=""> --All-- </option>
+                                    @forelse($governorates::getAll() as $governorate)
+                                        <option value="{{$governorate->id}}" {{ (Request::get('governorate_id') == $governorate->id) ? 'selected' : '' }}> {{$governorate->name}} </option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
 
-                <ul class="nav nav-tabs pull-left">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                            Governorate <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            @forelse($governorates::getAll() as $governorate)
-                                <li role="presentation"><a role="menuitem" href="{{route('donations.index', ['tab' => 'gov', 'governorate_id' => $governorate->id])}}" tabindex="-1">{{$governorate->name}}</a></li>
-                            @empty
-                            @endforelse
-                        </ul>
-                    </li>
-                </ul>
+                            <div class="col-xs-2">
+                                <label> Blood Types </label>
+                                <select name="blood_type_id" class="form-control">
+                                    <option value=""> --All-- </option>
+                                    @forelse($bloodTypes::getAll() as $bloodType)
+                                        <option value="{{$bloodType->id}}" {{ (Request::get('blood_type_id') == $bloodType->id) ? 'selected' : '' }}> {{$bloodType->name}} </option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
 
-                <ul class="nav nav-tabs pull-left">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                            City <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            @forelse($cities::getAll() as $city)
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="{{route('donations.index', ['tab' => 'city', 'city_id' => $city->id])}}">{{$city->name}}</a></li>
-                            @empty
-                            @endforelse
-                        </ul>
-                    </li>
-                </ul>
+                            <div class="col-xs-2">
+                                <label> City </label>
+                                <select name="city_id" class="form-control">
+                                    <option value=""> --All-- </option>
+                                    @forelse($cities::getAll() as $city)
+                                        <option value="{{$city->id}}" {{ (Request::get('city_id') == $city->id) ? 'selected' : '' }}> {{$city->name}} </option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
+                            <div class="col-xs-2">
+                                <label> Click to view changes</label>
+                                <input type="submit" class="btn btn-primary" value="Apply Filters">
+                            </div>
+                        </form>
+                        <form action="" method="get">
+                            <div class="col-xs-2 pull-right">
+                                <label> Search for a Donation Request </label>
+                                <input type="search" class="form-control input-sm" placeholder="Pres Enter to search" name="search" aria-controls="example1">
+                            </div>
+                        </form>
+                    </div>
+                </div>
                     <tr>
                         <th>No.</th>
                         <th>Patient Name</th>

@@ -73,7 +73,6 @@ class DonationRequestController extends Controller
         $tokens = Token::whereIn('client_id', $clientsIds)
                         ->where('token' ,'!=',null)->pluck('token')->toArray();
 
-
         if (count($tokens) > 0){
         $result = $this->sendFCM($tokens, $notification->title, $notification->content);
         }

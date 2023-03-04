@@ -58,7 +58,7 @@
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <img src="{{asset('admin/img/user2-160x160.jpg')}}" class="user-image" alt="User Image">
-                            <span class="hidden-xs">Test User</span>
+                            <span class="hidden-xs">{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
@@ -66,15 +66,17 @@
                                 <img src="{{asset('admin/img/user2-160x160.jpg')}}" class="img-circle" alt="User Image">
 
                                 <p>
-{{--                                    {{auth()->user()->name}}--}}
-                                    Test User
-                                    <small>Member since Nov. 2012</small>
+                                    {{ Auth::user()->name }}
+                                    <small>Member since &nbsp;{{ Auth::user()->created_at->format('F j, Y') }} </small>
                                 </p>
                             </li>
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-right">
-                                    <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                        <button class="btn btn-default btn-flat">Sign out</button>
+                                    </form>
                                 </div>
                             </li>
                         </ul>
@@ -97,7 +99,7 @@
                     <img src="{{asset('admin/img/user2-160x160.jpg')}}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>Test User</p>
+                    <p>{{ Auth::user()->name }}</p>
                     <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                 </div>
             </div>
@@ -122,12 +124,29 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
+                        @hasanyrole('AdminRole1|governorates')
                         <li><a href="{{route('governorates.index')}}"><i class="fa fa-circle-o"></i> Governorates</a></li>
+                        @endrole
+
+                        @hasanyrole('AdminRole1|categories')
                         <li><a href="{{route('categories.index')}}"><i class="fa fa-circle-o"></i> Categories</a></li>
+                        @endrole
+
+                        @hasanyrole('AdminRole1|cities')
                         <li><a href="{{route('cities.index')}}"><i class="fa fa-circle-o"></i> Cities</a></li>
-                        <li><a href="{{route('posts.index')}}"><i class="fa fa-circle-o"></i> Posts</a></li>
+                        @endrole
                     </ul>
                 </li>
+
+                @hasanyrole('AdminRole1|posts')
+                <li>
+                    <a href="{{route('posts.index')}}">
+                        <i class="fa fa-file-text"></i> <span>Posts</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
+                @endrole
+
                 <li>
                     <a href="{{route('clients.index')}}">
                         <i class="fa fa-user"></i> <span>Clients</span>
@@ -146,9 +165,35 @@
                         <span class="pull-right-container"> </span>
                     </a>
                 </li>
+
+                @hasrole('AdminRole1')
+                <li>
+                    <a href="{{route('users.index')}}">
+                        <i class="fa fa-user-circle"></i> <span>Users</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
+                @endrole
+
+                <!-- same as above one -->
+                @role('AdminRole1')
+                <li>
+                    <a href="{{route('roles.index')}}">
+                        <i class="fa fa-code-fork"></i> <span>Roles</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
+                @endrole
+
                 <li>
                     <a href="{{route('settings.index')}}">
                         <i class="fa fa-cogs"></i> <span>Settings</span>
+                        <span class="pull-right-container"> </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('password.request') }}">
+                        <i class="fa fa-key"></i> <span>Change your password</span>
                         <span class="pull-right-container"> </span>
                     </a>
                 </li>
