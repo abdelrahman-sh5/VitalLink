@@ -50,6 +50,7 @@ Route::post('/create-new-password', [AuthController::class, 'createNewPassword']
  */
 
 Route::get('cities', [MainController::class, 'cities']);
+Route::get('governorate-cities/{id}', [MainController::class, 'governorateCities']);    // get cities of a particular governorate
 Route::get('settings', 'Api\MainController@settings');
 Route::get('categories', 'Api\MainController@categories');
 Route::get('governorates', 'Api\MainController@governorates');

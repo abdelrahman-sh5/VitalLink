@@ -11,6 +11,10 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{asset('admin/plugins/font-awesome/css/font-awesome.min.css')}}">
+
+    <!--favicon-->
+    <link rel="icon" href="{{asset('admin/img/mainadmin.png')}}">
+
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{asset('admin/plugins/Ionicons/css/ionicons.min.css')}}">
     <!-- Theme style -->

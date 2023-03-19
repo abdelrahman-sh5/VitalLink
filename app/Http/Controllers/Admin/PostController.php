@@ -11,7 +11,6 @@ class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -98,7 +97,7 @@ class PostController extends Controller
             $request->image->move(storage_path('app/public/images'), $newImageName);
             $post->image    = $newImageName;
         }
-        return ($post->save()) ? redirect(route('posts.index')) :  view('admin.posts.updateForm')->with('post', $post);
+        return ($post->save()) ? redirect(route('posts.index')) : view('admin.posts.updateForm')->with('post', $post);
     }
 
     /**

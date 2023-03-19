@@ -22,6 +22,14 @@ class MainController extends Controller
         return json_encode($cities);
     }
 
+    public function governorateCities($id)
+    {
+        if (isset($id)){
+           $cities =  City::where('governorate_id', $id)->get();
+           return $cities;
+        }
+    }
+
 
     public function categories(){
         $categories = Category::all();

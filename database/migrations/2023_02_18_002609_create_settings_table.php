@@ -10,6 +10,8 @@ class CreateSettingsTable extends Migration {
 		Schema::create('settings', function(Blueprint $table) {
 			$table->increments('id');
 			$table->text('notification_text');
+			$table->text('intro_text_1');
+			$table->text('intro_text_2');
 			$table->longText('about_text');
 			$table->string('phone');
 			$table->string('email');

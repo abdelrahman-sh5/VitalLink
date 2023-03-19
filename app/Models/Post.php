@@ -21,4 +21,17 @@ class Post extends Model
         return $this->belongsToMany('App\Models\Client');
     }
 
+    public static function getAll()
+    {
+        $posts = Post::all()->sortDesc();
+        return $posts;
+    }
+
+    public static function getRelatedPosts($categoryId, $postId)
+    {
+        $relatedPosts = Post::where('category_id', $categoryId)
+                        ->where('id', '!=', $postId)
+                        ->get()->sortDesc();
+        return $relatedPosts;
+    }
 }

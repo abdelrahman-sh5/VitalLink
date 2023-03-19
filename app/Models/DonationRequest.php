@@ -32,4 +32,12 @@ class DonationRequest extends Model
         return $this->hasOne('App\Models\Notification');
     }
 
+    public static function getAll($count=null)
+    {
+        if ($count !== null){
+            return DonationRequest::latest()->take($count)->get(); //all();
+        }
+        return DonationRequest::all();
+    }
+
 }

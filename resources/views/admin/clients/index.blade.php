@@ -1,7 +1,6 @@
 @extends('admin.home')
-@inject('bloodTypes','App\Models\BloodType')
 @inject('governorates','App\Models\Governorate')
-@inject('cities','App\Models\City')
+
 
 @section('title', 'Clients Page')
 @section('small-title', 'Simple title')
@@ -33,6 +32,7 @@
                                             </select>
                                         </div>
 
+                                        @inject('bloodTypes','App\Models\BloodType')
                                         <div class="col-xs-2">
                                             <label> Blood Types </label>
                                             <select name="blood_type_id" class="form-control">
@@ -44,6 +44,7 @@
                                             </select>
                                         </div>
 
+                                        @inject('cities','App\Models\City')
                                         <div class="col-xs-2">
                                             <label> City </label>
                                             <select name="city_id" class="form-control">
